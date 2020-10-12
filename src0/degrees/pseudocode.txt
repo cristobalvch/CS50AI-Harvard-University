@@ -1,0 +1,53 @@
+shortest_path:
+    entrada:  source(id_person1) target(id_person2)
+    salida:   lista = [movie_id,person_id] por source y target, tupla de int.
+    ejemplo [(1,2),(3,4)] --> la source en la pelicula 1 con la persona 2, que está en la pelicula3 donde está el target.
+    si no hay path entre  source y target, retorna no
+
+ movies = actions
+ person = state
+
+
+ACTION(states) = node
+
+ #Initialize frontier to just starting position
+    start = Node(state=source,parent=None,action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+
+    #Initialize an empty explored set
+    explored = set()
+    num_explored=0
+    #Starting the leep until the solution found
+    while True:
+        #in case that there are nothing in the frontier
+        if frontier.empty():
+            raise Exception('no solution')
+
+        #Choose a node from the frontier
+        node = frontier.remove()
+        num_explored +=1
+
+        #in case the node is the goal
+        if node.state == target:
+            actions = []
+            cells = []
+
+            #To follow parent nodes to find the solution
+            while node.parent is not None:
+                actions.append(node.action)
+                cells.append(node.state)
+                node = node.parent
+            actions.reverse()
+            cells.reverse()
+            solution = (actions,cells)
+            return
+
+        #Mark the node as explored
+        explored.add(node.state)
+
+        #Adding the neighbors to frontier
+        for action, state in neighbors_for_person(node.state):
+            if not frontier.contains_state(state) and state not in explored:
+                child = Node(state=state,parent=node,action=action)
+                frontier.add(child)
